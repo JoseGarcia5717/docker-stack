@@ -1,0 +1,92 @@
+version: "3.7"
+services: 
+  php:
+    build: 
+      context: './php/'          
+     # network: 'host'
+      args:
+       PHP_VERSION: ${PHP_VERSION}
+    ports:
+      - "9000:9000"   
+    volumes:
+      - ./php/php.ini:/usr/local/etc/php/conf.d/custom.ini
+      - ${PROJECT_ROOT}/:/var/www/html/
+      - ./storage:/home/storage/
+    container_name: php
+  apache:
+    build:
+      context: './apache/'
+    #  network: 'host'
+      args:
+       APACHE_VERSION: ${APACHE_VERSION}
+    depends_on:
+      - php
+      - mariadb
+    ports:
+      - "80:80"
+    volumes:
+      - ${PROJECT_ROOT}/:/var/www/html/
+      - ./storage:/home/storage/
+    container_name: apache
+  mariadb:
+    env_file:
+      - .env
+    image: bitnami/mariadb:${MYSQL_VERSION:-latest}
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+            - ./mariadb/data/:/bitnami
+            - ./mariadb/config/:/opt/bitnami/mariadb/conf/    
+    environment:
+      MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"      
+    container_name: mariadb
+  phpmyadmin:
+    image: 'bitnami/phpmyadmin:4'
+    ports:
+      - '4888:80'
+      - '4443:443'      
+    depends_on:
+      - mariadb
+    volumes:
+      - ./mariadb/data/:/bitnami
+  composer:
+      image: composer:1.9
+      command: ["composer", "install"]
+      volumes:
+        - ${PROJECT_ROOT}/correspondencia/:/app
+  composer:
+      image: composer:1.9
+      command: ["composer", "install"]
+      volumes:
+        - ${PROJECT_ROOT}/sia/:/app     
+  composer_api_admin:
+      image: composer:1.9
+      command: ["composer", "install"]
+      volumes:
+        - ${PROJECT_ROOT}/api_admin:/app
+  composer_api_sia:
+      image: composer:1.9
+      command: ["composer", "install"]
+      volumes:
+        - ${PROJECT_ROOT}/api_sia/:/app
+  composer_api_correspondencia:
+      image: composer:1.9
+      command: ["composer", "install"]
+      volumes:
+        - ${PROJECT_ROOT}/api_correspondencia/:/app
+  composer_api_recursos_humanos:
+      image: composer:1.9
+      command: ["composer", "install"]
+      volumes:
+        - ${PROJECT_ROOT}/composer_api_recursos_humanos/:/app
+  composer_efirma:
+      image: composer:1.9
+      command: ["composer", "install"]
+      volumes:
+        - ${PROJECT_ROOT}/efirma/:/app
+  composer_laravel_efirma:
+      image: composer:1.9
+      command: ["composer", "install"]
+      volumes:
+        - ${PROJECT_ROOT}/laravel-efirma/:/app

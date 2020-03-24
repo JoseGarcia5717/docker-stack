@@ -1,0 +1,8 @@
+mariadb/data/mariadb/data/aria_log.00000001
+mariadb/data/
+public_html/correspondenciaOLD/.gitignore
+public_html/
+storage/2019/correspondencia/
+storage/logs/apache/2
+storage/logs/apache/1
+storage/logs/php/error.log
